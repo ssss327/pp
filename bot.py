@@ -1,3 +1,4 @@
+import os
 import requests
 import pandas as pd
 import matplotlib
@@ -6,16 +7,24 @@ import matplotlib.pyplot as plt
 from io import BytesIO
 import sys
 import datetime
-import os
 import time
 import asyncio
 import json
+import logging
+import numpy as np
 
 from telegram import Bot, Update
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, ContextTypes,
     JobQueue
 )
+
+# Налаштування логування
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
 
 # Якщо хочемо tvdatafeed
 try:
@@ -37,15 +46,17 @@ except ImportError:
 TELEGRAM_TOKEN = "7548050336:AAEZe89_zJ66rFK-tN-l3ZbBPRY3u2hFcs0"
 
 BINANCE_INTERVAL = "1h"         # 1m,3m,5m,15m,30m,1h,2h,4h,6h,8h,12h,1d
-CHECK_INTERVAL_SEC = 900
+CHECK_INTERVAL_SEC = 3600        # 1 година
 THRESHOLD_FLAT = 0.01
 
-BINANCE_API_KEY = "fo8MS8lNSI7YPkD2fcncjgyjHVoWMncXcS0xXY0fjKo7fmaFvnrtaXxmpKsGx3oQ"
-BINANCE_API_SECRET = "gDVNllBbJ7xxFyw2HajJeJ8uTMOKnVkkW0zSzANC380Mzkojnyr5WE3FE0aATKeV"
+BINANCE_API_KEY = os.getenv("fo8MS8lNSI7YPkD2fcncjgyjHVoWMncXcS0xXY0fjKo7fmaFvnrtaXxmpKsGx3oQ")
+BINANCE_API_SECRET = os.getenv("gDVNllBbJ7xxFyw2HajJeJ8uTMOKnVkkW0zSzANC380Mzkojnyr5WE3FE0aATKeV")
 
-TV_USERNAME = "uthhtu"
-TV_PASSWORD = "Berezynskyi2004"
+TV_USERNAME = os.getenv("uthhtu")
+TV_PASSWORD = os.getenv("Berezynskyi2004")
 
+ACCOUNT_BALANCE = float(os.getenv("ACCOUNT_BALANCE", "10000"))  # Ваш баланс у доларах
+RISK_PER_TRADE = float(os.getenv("RISK_PER_TRADE", "0.01"))   # Ризикувати 1% від балансу
 
 # Приклад мапи для TradingView (символ -> (symbol, exchange))
 tv_symbol_map = {
@@ -92,7 +103,7 @@ def fetch_binance_symbols_futures() -> list:
                 symbols.append(s["symbol"])
         return symbols
     except Exception as e:
-        print(f"Помилка отримання списку Binance Futures: {e}")
+        logger.error(f"Помилка отримання списку Binance Futures: {e}")
         return []
 
 # ===============================
@@ -130,7 +141,7 @@ def fetch_binance_futures_data(symbol: str, interval: str = "1h", limit: int = 2
         df.rename(columns={"openTime":"time"}, inplace=True)
         return df[["time","open","high","low","close","volume"]]
     except Exception as e:
-        print(f"❌ fetch_binance_futures_data({symbol}) помилка: {e}")
+        logger.error(f"❌ fetch_binance_futures_data({symbol}) помилка: {e}")
         return None
 
 # ===============================
@@ -141,7 +152,7 @@ def init_tvDatafeed():
     Ініціалізує tvDatafeed з логіном/паролем.
     """
     if TvDatafeed is None or Interval is None:
-        print("tvDatafeed не імпортовано, встановіть бібліотеку.")
+        logger.warning("tvDatafeed не імпортовано, встановіть бібліотеку.")
         return None
     try:
         tv = TvDatafeed(
@@ -150,7 +161,7 @@ def init_tvDatafeed():
         )
         return tv
     except Exception as e:
-        print(f"Помилка ініціалізації tvDatafeed: {e}")
+        logger.error(f"Помилка ініціалізації tvDatafeed: {e}")
         return None
 
 def fetch_data_from_tv(tv: TvDatafeed, symbol: str, exchange: str, interval=None, bars=200):
@@ -169,7 +180,7 @@ def fetch_data_from_tv(tv: TvDatafeed, symbol: str, exchange: str, interval=None
             n_bars=bars
         )
         if data is None or data.empty:
-            print(f"❌ Дані для {symbol} з TradingView не знайдені.")
+            logger.warning(f"❌ Дані для {symbol} з TradingView не знайдені.")
             return None
         data.reset_index(inplace=True)
         data.rename(columns={"datetime": "time"}, inplace=True)
@@ -178,7 +189,7 @@ def fetch_data_from_tv(tv: TvDatafeed, symbol: str, exchange: str, interval=None
         df.reset_index(drop=True, inplace=True)
         return df
     except Exception as e:
-        print(f"❌ fetch_data_from_tv({symbol}, {exchange}) помилка: {e}")
+        logger.error(f"❌ fetch_data_from_tv({symbol}, {exchange}) помилка: {e}")
         return None
 
 # ===============================
@@ -198,7 +209,7 @@ def fetch_btc_dominance_tv(limit=200, interval=None):
     return fetch_data_from_tv(tv, "BTC.D", "CRYPTOCAP", interval=interval, bars=limit)
 
 # ===============================
-# 5. Індикатори (MACD, RSI, Bollinger, ATR, Stoх, SAR) + патерни
+# 5. Індикатори (MACD, RSI, Bollinger, ATR, Stochastic, SAR) + патерни
 # ===============================
 def calculate_macd(data, short_window=12, long_window=26, signal_window=9):
     short_ema = data['close'].ewm(span=short_window, adjust=False).mean()
@@ -287,8 +298,7 @@ def find_coingecko_id(symbol: str):
     Пошук на CoinGecko:
     Наприклад, якщо symbol="APEUSDT", то шукаємо "APE" чи "apecoin" тощо.
     """
-    # 1) Видаляємо "USDT" з кінця, аби отримати "APE"
-    base_name = symbol.replace("USDT", "").lower()
+    base_name = symbol.replace("USDT", "").replace("BUSD","").replace("USDC","").lower()
     url = f"https://api.coingecko.com/api/v3/search?query={base_name}"
     try:
         resp = requests.get(url)
@@ -297,15 +307,12 @@ def find_coingecko_id(symbol: str):
         coins = data.get("coins", [])
         if not coins:
             return None
-        # Беремо перший збіг
-        # coins[i] виглядає як {"id": "apecoin", "symbol":"ape", "name":"ApeCoin", ...}
         first = coins[0]
-        return first["id"]  # тобто "apecoin"
+        return first["id"]  # наприклад, "apecoin"
     except:
         return None
 
 def analyze_fundamental(symbol: str):
-    # 1) Пробуємо знайти coin_id через пошук
     coin_id = find_coingecko_id(symbol)
     if coin_id is None:
         return (None, f"Фундаментал: не вдалося знайти {symbol} на CoinGecko (пошук).")
@@ -314,7 +321,6 @@ def analyze_fundamental(symbol: str):
         f"https://api.coingecko.com/api/v3/coins/{coin_id}"
         "?localization=false&tickers=false&market_data=true&community_data=true&developer_data=true&sparkline=false"
     )
-    # ... далі як завжди
     try:
         resp = requests.get(url)
         resp.raise_for_status()
@@ -324,7 +330,6 @@ def analyze_fundamental(symbol: str):
         dev_score = data.get("developer_score", 0)
         comm_score = data.get("community_score", 0)
         up_votes = data.get("sentiment_votes_up_percentage", 0)
-        # ... можна аналізувати більше полів
 
         explanation = f"[CoinGecko] MarketCap=${market_cap}, DevScore={dev_score}, CommScore={comm_score}, UpVotes={up_votes}%"
 
@@ -357,10 +362,6 @@ def compute_cvd(trades_list):
     return cvd, buy_vol, sell_vol
 
 def analyze_cluster(symbol: str):
-    """
-    Використовуємо глобальний список трейдів global_aggtrades[symbol],
-    рахуємо CVD за останні 15 хв.
-    """
     trades = global_aggtrades.get(symbol, [])
     if len(trades) < 10:
         return (None, f"Кластер: Недостатньо trades у пам'яті для {symbol}.")
@@ -381,10 +382,8 @@ def analyze_cluster(symbol: str):
         return (None, explanation + "\nНемає однозначного перекосу.")
 
 # ===============================
-# 8. Структурний аналіз (Wyckoff + SM + ICM)
+# 8. Структурний аналіз (Wyckoff + Smart Money Concept + Institutional Candle Model)
 # ===============================
-
-# -- 8.1 Wyckoff --
 def analyze_wyckoff(data):
     if data is None or len(data) < 50:
         return (None, "Wyckoff: замало даних.")
@@ -399,7 +398,6 @@ def analyze_wyckoff(data):
     vol_current  = df["volume"].iloc[-1]
     vol_avg      = df["volume"].iloc[-window:].mean()
 
-    # Приклад:
     if (latest_close - latest_min)/latest_min < 0.005 and vol_current > 2 * vol_avg:
         return ("buy", "Wyckoff: Spring (Accumulation)")
     if (latest_max - latest_close)/latest_close < 0.005 and vol_current > 2 * vol_avg:
@@ -407,7 +405,6 @@ def analyze_wyckoff(data):
 
     return (None, "Wyckoff: немає Spring чи UT.")
 
-# -- 8.2 SM (Smart Money Concept) --
 def analyze_smc(data):
     if data is None or len(data) < 30:
         return (None, "SMC: мало даних.")
@@ -430,7 +427,6 @@ def analyze_smc(data):
     else:
         return (None, "SMC: без BOS.")
 
-# -- 8.3 ICM (Institutional Candle Model) --
 def analyze_icm(data):
     if data is None or len(data) < 5:
         return (None, "ICM: мало даних.")
@@ -466,27 +462,53 @@ def analyze_structural(data):
         signals.append(icm_sig)
 
     if "buy" in signals and "sell" in signals:
-        final = None
+        final_signal = None
     else:
         buys = signals.count("buy")
         sells = signals.count("sell")
         if buys > sells:
-            final = "buy"
+            final_signal = "buy"
         elif sells > buys:
-            final = "sell"
+            final_signal = "sell"
         else:
-            final = None
+            final_signal = None
 
     explanation = (
         f"=== Wyckoff ===\n{wy_expl}\n\n"
         f"=== SMC ===\n{smc_expl}\n\n"
         f"=== ICM ===\n{icm_expl}"
     )
-    return (final, explanation)
+    return (final_signal, explanation)
 
 # ===============================
 # 9. Генерація сигналу (індикатори + фундаментал + кластер + структура)
 # ===============================
+def calculate_moving_average(data, window=50):
+    return data['close'].rolling(window=window).mean()
+
+def get_trend_long_term(data, window=200, threshold=0.02):
+    if len(data) < window:
+        return "flat"
+    ma = calculate_moving_average(data, window)
+    latest_close = data['close'].iloc[-1]
+    latest_ma = ma.iloc[-1]
+    prev_ma = ma.iloc[-window]
+    diff = (latest_ma - prev_ma) / prev_ma
+    if diff > threshold:
+        return "uptrend"
+    elif diff < -threshold:
+        return "downtrend"
+    else:
+        return "flat"
+
+def calculate_position_size(entry_price, sl_price):
+    risk_amount = ACCOUNT_BALANCE * RISK_PER_TRADE
+    risk_per_unit = abs(entry_price - sl_price)
+    if risk_per_unit == 0:
+        return 0
+    position_size = risk_amount / risk_per_unit
+    return position_size
+
 def generate_indicator_signal(data):
     macd, macd_signal = calculate_macd(data)
     middle_band, upper_band, lower_band = calculate_bollinger_bands(data)
@@ -505,16 +527,64 @@ def generate_indicator_signal(data):
     latest_atr = atr.iloc[-1]
     pattern_names = [p[0] for p in patterns]
 
-    buy_signal = (
-        (latest_macd > latest_macd_signal) and
-        (latest_rsi < 50) and
-        (latest_close <= latest_lower_band * 1.02)
+    # Довгостроковий тренд
+    long_term_trend = get_trend_long_term(data, window=200, threshold=0.02)
+
+    # Фільтрація за трендом
+    if long_term_trend == "uptrend":
+        buy_condition = True
+        sell_condition = False
+    elif long_term_trend == "downtrend":
+        buy_condition = False
+        sell_condition = True
+    else:
+        buy_condition = sell_condition = True  # В боковому тренді дозволяємо обидва
+
+    # --- ОРИГІНАЛЬНІ УМОВИ (ЗАКОМЕНТОВАНІ) ---
+    #
+    # trend_condition_buy = (latest_macd > latest_macd_signal and latest_macd > 0)
+    # rsi_condition_buy = (latest_rsi < 30)
+    # bollinger_condition_buy = (latest_close < lower_band.iloc[-1])
+    #
+    # trend_condition_sell = (latest_macd < latest_macd_signal and latest_macd < 0)
+    # rsi_condition_sell = (latest_rsi > 70)
+    # bollinger_condition_sell = (latest_close > upper_band.iloc[-1])
+    #
+    # volume_condition = (data['volume'].iloc[-1] > data['volume'].rolling(window=20).mean().iloc[-1] * 1.5)
+
+    # --- ОНОВЛЕНІ УМОВИ ---
+    # MACD: враховуємо різницю (macd_diff)
+    macd_diff = latest_macd - latest_macd_signal
+
+    # RSI: робимо екстремальнішою (25/75)
+    rsi_condition_buy = (latest_rsi < 25)
+    rsi_condition_sell = (latest_rsi > 75)
+
+    # MACD «жорсткіший»: вимагаємо, щоб різниця була > 0.2 (або < -0.2 для sell)
+    trend_condition_buy = (macd_diff > 0.2 and latest_macd > 0)
+    trend_condition_sell = (macd_diff < -0.2 and latest_macd < 0)
+
+    # Bollinger: відступ 1% від нижньої/верхньої межі
+    bollinger_condition_buy = (latest_close < latest_lower_band * 0.99)
+    bollinger_condition_sell = (latest_close > latest_upper_band * 1.01)
+
+    # Volume: замість 1.5x робимо 2x
+    volume_condition = (
+        data['volume'].iloc[-1] > data['volume'].rolling(window=20).mean().iloc[-1] * 2
     )
-    sell_signal = (
-        (latest_macd < latest_macd_signal) and
-        (latest_rsi > 50) and
-        (latest_close >= latest_upper_band * 0.98)
-    )
+
+    # Підсумкові buy/sell сигнали
+    buy_signal = (trend_condition_buy
+                  and rsi_condition_buy
+                  and bollinger_condition_buy
+                  and volume_condition
+                  and buy_condition)
+
+    sell_signal = (trend_condition_sell
+                   and rsi_condition_sell
+                   and bollinger_condition_sell
+                   and volume_condition
+                   and sell_condition)
 
     signal_type = None
     explanation = ""
@@ -522,14 +592,16 @@ def generate_indicator_signal(data):
     if buy_signal:
         signal_type = "buy"
         explanation = (
-            f"Indicator-based: MACD bullish, RSI<50, close near lower Bollinger ({latest_lower_band:.2f})."
+            f"Indicator-based (посилений): MACD різниця > 0.2, RSI < 25, " 
+            f"ціна нижче нижньої Bollinger*0.99, обсяг > 2x середнього."
         )
         if 'hammer' in pattern_names or 'bullish_engulfing' in pattern_names:
             explanation += "\n+ Свічковий патерн (hammer/bullish_engulfing)."
     elif sell_signal:
         signal_type = "sell"
         explanation = (
-            f"Indicator-based: MACD bearish, RSI>50, close near upper Bollinger ({latest_upper_band:.2f})."
+            f"Indicator-based (посилений): MACD різниця < -0.2, RSI > 75, "
+            f"ціна вище верхньої Bollinger*1.01, обсяг > 2x середнього."
         )
         if 'doji' in pattern_names:
             explanation += "\n+ Doji => невизначеність."
@@ -543,17 +615,19 @@ def generate_indicator_signal(data):
 
     if signal_type == "buy":
         entry = latest_close
-        tp = round(entry + latest_atr * 2, 2)
-        sl = round(entry - latest_atr * 1.5, 2)
+        tp = round(entry + latest_atr * 2, 2)  # TP на 2 ATR вище
+        sl = round(entry - latest_atr * 1.5, 2)  # SL на 1.5 ATR нижче
+        position_size = calculate_position_size(entry, sl)
     elif signal_type == "sell":
         entry = latest_close
-        tp = round(entry - latest_atr * 2, 2)
-        sl = round(entry + latest_atr * 1.5, 2)
+        tp = round(entry - latest_atr * 2, 2)  # TP на 2 ATR нижче
+        sl = round(entry + latest_atr * 1.5, 2)  # SL на 1.5 ATR вище
+        position_size = calculate_position_size(entry, sl)
     else:
-        entry, tp, sl = None, None, None
+        entry, tp, sl, position_size = None, None, None, None
 
     return (
-        signal_type, explanation, entry, tp, sl,
+        signal_type, explanation, entry, tp, sl, position_size,
         macd, macd_signal, rsi,
         middle_band, upper_band, lower_band, atr,
         k, d, sar
@@ -630,7 +704,7 @@ def generate_chart(
 
     plt.rcParams.update({'font.size': 10})
     plt.rcParams['axes.titlesize'] = 12
-    fig, axs = plt.subplots(5, 1, figsize=(12, 12), sharex=True,
+    fig, axs = plt.subplots(5, 1, figsize=(12, 18), sharex=True,
                             gridspec_kw={'height_ratios': [3,1,1,1,1]})
 
     # Ціна + Bollinger + SAR
@@ -652,8 +726,8 @@ def generate_chart(
         else:
             axs[0].plot(data['time'].iloc[i], sar.iloc[i], marker='.', color='red')
 
-    axs[0].set_title("Price + Bollinger + SAR")
-    axs[0].legend()
+    axs[0].set_title("Price + Bollinger Bands + SAR")
+    axs[0].legend(loc='upper left')
     axs[0].grid(True)
 
     # MACD
@@ -661,7 +735,7 @@ def generate_chart(
     axs[1].plot(data['time'], macd_signal, label="Signal", color='magenta', linewidth=1)
     axs[1].axhline(y=0, color='gray', linestyle='--', linewidth=1)
     axs[1].set_title("MACD")
-    axs[1].legend()
+    axs[1].legend(loc='upper left')
     axs[1].grid(True)
 
     # RSI
@@ -669,7 +743,7 @@ def generate_chart(
     axs[2].axhline(y=70, color='red', linestyle='--', linewidth=1)
     axs[2].axhline(y=30, color='green', linestyle='--', linewidth=1)
     axs[2].set_title("RSI")
-    axs[2].legend()
+    axs[2].legend(loc='upper left')
     axs[2].grid(True)
 
     # Stochastic
@@ -678,13 +752,13 @@ def generate_chart(
     axs[3].axhline(y=80, color='red', linestyle='--', linewidth=1)
     axs[3].axhline(y=20, color='green', linestyle='--', linewidth=1)
     axs[3].set_title("Stochastic")
-    axs[3].legend()
+    axs[3].legend(loc='upper left')
     axs[3].grid(True)
 
     # ATR
     axs[4].plot(data['time'], atr, label="ATR", color='black', linewidth=1.5)
     axs[4].set_title("ATR")
-    axs[4].legend()
+    axs[4].legend(loc='upper left')
     axs[4].grid(True)
 
     plt.tight_layout()
@@ -697,12 +771,12 @@ def generate_chart(
 # ===============================
 # Лог сигналу
 # ===============================
-def log_signal(symbol, interval, signal_type, entry, tp, sl, explanation):
+def log_signal(symbol, interval, signal_type, entry, tp, sl, explanation, position_size):
     if not os.path.exists("signals_log.csv"):
         with open("signals_log.csv", "w") as f:
-            f.write("timestamp,symbol,interval,signal_type,entry,tp,sl,explanation\n")
+            f.write("timestamp,symbol,interval,signal_type,entry,tp,sl,position_size,explanation\n")
     with open("signals_log.csv", "a") as f:
-        f.write(f"{datetime.datetime.utcnow()},{symbol},{interval},{signal_type},{entry},{tp},{sl},{explanation}\n")
+        f.write(f"{datetime.datetime.utcnow()},{symbol},{interval},{signal_type},{entry},{tp},{sl},{position_size},{explanation}\n")
 
 # ===============================
 # 11. Логіка BTC + BTC.D
@@ -735,12 +809,12 @@ def alt_signal_adjustment(btcd_trend, btc_trend):
         return "rise"
     return "stable"
 
-def adjust_final_signal(alt_signal, alt_trend_from_table):
+def adjust_final_signal(alt_signal, alts_outlook):
     if alt_signal == "buy":
-        if alt_trend_from_table in ["drop", "drop_strong"]:
+        if alts_outlook in ["drop", "drop_strong"]:
             return None
     elif alt_signal == "sell":
-        if alt_trend_from_table in ["rise", "rise_strong"]:
+        if alts_outlook in ["rise", "rise_strong"]:
             return None
     return alt_signal
 
@@ -751,7 +825,7 @@ async def check_signals(context: ContextTypes.DEFAULT_TYPE):
     """
     Викликається JobQueue кожні N хв/год.
     """
-    print("Функція check_signals запущена")
+    logger.info("Функція check_signals запущена")
     chat_id = context.job.chat_id
 
     try:
@@ -763,10 +837,12 @@ async def check_signals(context: ContextTypes.DEFAULT_TYPE):
             return
 
         data_btc = fetch_binance_futures_data("BTCUSDT", interval=BINANCE_INTERVAL)
-        btc_trend = get_trend(data_btc)
+        btc_trend = get_trend_long_term(data_btc)
+        if btc_trend is None:
+            btc_trend = "flat"
 
         data_btcd = fetch_btc_dominance_tv()
-        btcd_trend = get_trend(data_btcd)
+        btcd_trend = get_trend_long_term(data_btcd) if data_btcd is not None else "flat"
 
         alts_outlook = alt_signal_adjustment(btcd_trend, btc_trend)
 
@@ -783,37 +859,46 @@ async def check_signals(context: ContextTypes.DEFAULT_TYPE):
             adjusted_signal = adjust_final_signal(final_signal, alts_outlook)
 
             if adjusted_signal is not None:
-                found_any_signal = True
-
                 (
                     _s_type, _ex,
-                    entry, tp, sl,
+                    entry, tp, sl, position_size,
                     macd, macd_signal, rsi,
                     mb, ub, lb, atr,
                     k, d, sar
                 ) = ind_sig
 
+                logger.debug(f"Сигнал для {symbol}: Type={adjusted_signal}, Entry={entry}, TP={tp}, SL={sl}, Position Size={position_size}")
+
+                if entry is None or tp is None or sl is None or position_size is None:
+                    logger.warning(f"Сигнал для {symbol} має невірні значення: entry={entry}, tp={tp}, sl={sl}, position_size={position_size}")
+                    continue
+
                 caption = (
                     f"АвтоСигнал для {symbol}:\n"
                     f"Тип: {adjusted_signal.upper()}\n"
-                    f"Entry: {entry}\n"
-                    f"TP: {tp}\n"
-                    f"SL: {sl}\n\n"
+                    f"Entry: {entry if entry is not None else 'N/A'}\n"
+                    f"TP: {tp if tp is not None else 'N/A'}\n"
+                    f"SL: {sl if sl is not None else 'N/A'}\n"
+                    f"Position Size: {position_size:.4f}\n\n" if position_size is not None else "Position Size: N/A\n\n"
                     f"{final_explanation}\n"
                     f"BTC={btc_trend}, BTC.D={btcd_trend} => ALTS={alts_outlook}"
                 )
+
                 chart = generate_chart(df, macd, macd_signal, rsi, mb, ub, lb, atr, k, d, sar, entry, tp, sl)
-                await context.bot.send_photo(chat_id=chat_id, photo=chart, caption=caption)
-                log_signal(symbol, BINANCE_INTERVAL, adjusted_signal, entry, tp, sl, final_explanation)
+                if chart:
+                    await context.bot.send_photo(chat_id=chat_id, photo=chart, caption=caption)
+                log_signal(symbol, BINANCE_INTERVAL, adjusted_signal, entry, tp, sl, final_explanation, position_size)
+
+                found_any_signal = True
 
         if not found_any_signal:
             await context.bot.send_message(chat_id=chat_id, text="Немає сигналів на даний момент.")
     except Exception as e:
-        print(f"❌ Помилка у check_signals: {e}")
+        logger.error(f"❌ Помилка у check_signals: {e}")
         await context.bot.send_message(chat_id=chat_id, text=f"❌ Помилка у перевірці сигналів: {e}")
 
 # ===============================
-# 13. /START і /SIGNAL
+# 13. Команди /START, /SIGNAL, /REPORT
 # ===============================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -826,21 +911,22 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     job_queue = context.application.job_queue
     if job_queue is None:
-        print("❌ JobQueue не ініціалізовано. Перевірте залежності.")
+        logger.error("❌ JobQueue не ініціалізовано. Перевірте залежності.")
         return
 
     current_jobs = job_queue.get_jobs_by_name("check_signals")
     for job in current_jobs:
         job.schedule_removal()
 
+    chat_id = update.effective_chat.id
     job_queue.run_repeating(
         callback=check_signals,
-        interval=3600,  # 1 година
+        interval=CHECK_INTERVAL_SEC,  # 1 година
         first=10,
         name="check_signals",
-        chat_id=update.effective_chat.id
+        chat_id=chat_id
     )
-    print("✅ JobQueue успішно запущено. Сигнали будуть надсилатися кожну годину.")
+    logger.info("✅ JobQueue успішно запущено. Сигнали будуть надсилатися кожну годину.")
 
 async def signal(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -880,7 +966,7 @@ async def signal(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if adjusted_signal is not None:
             (
                 _s_type, _expl,
-                entry, tp, sl,
+                entry, tp, sl, position_size,
                 macd, macd_signal, rsi,
                 mb, ub, lb, atr,
                 k, d, sar
@@ -890,91 +976,145 @@ async def signal(update: Update, context: ContextTypes.DEFAULT_TYPE):
             caption = (
                 f"Сигнал для {symbol}:\n"
                 f"Тип: {adjusted_signal.upper()}\n"
-                f"Entry: {entry}\n"
-                f"TP: {tp}\n"
-                f"SL: {sl}\n\n"
+                f"Entry: {entry if entry is not None else 'N/A'}\n"
+                f"TP: {tp if tp is not None else 'N/A'}\n"
+                f"SL: {sl if sl is not None else 'N/A'}\n"
+                f"Position Size: {position_size:.4f}\n\n" if position_size is not None else "Position Size: N/A\n\n"
                 f"{final_explanation}\n"
                 f"BTC={btc_tr}, BTC.D={btcd_tr} => ALTS={alts_outlook}"
             )
-            await update.message.reply_photo(photo=chart, caption=caption)
-            log_signal(symbol, BINANCE_INTERVAL, adjusted_signal, entry, tp, sl, final_explanation)
+            if chart:
+                await update.message.reply_photo(photo=chart, caption=caption)
+            log_signal(symbol, BINANCE_INTERVAL, adjusted_signal, entry, tp, sl, final_explanation, position_size)
         else:
             await update.message.reply_text("Немає чіткого сигналу.\n\n" + final_explanation)
     except Exception as e:
+        logger.error(f"❌ Помилка: {e}")
         await update.message.reply_text(f"❌ Помилка: {e}")
+
+async def report(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Команда: /report
+    Генерує звіт по угодах.
+    """
+    report = generate_report()
+    await update.message.reply_text(report, parse_mode='Markdown')
+
+def generate_report():
+    if not os.path.exists("signals_log.csv"):
+        return "Немає логів для звіту."
+
+    df = pd.read_csv("signals_log.csv", parse_dates=["timestamp"])
+    total_trades = len(df)
+    successful_trades = len(df[(df['signal_type'].isin(['buy', 'sell'])) &
+                               ((df['tp'] > df['entry']) | (df['sl'] < df['entry']))])
+    failed_trades = len(df[df['sl'] < df['entry']])
+
+    profit = 0
+    for _, row in df.iterrows():
+        if row['signal_type'] == 'buy':
+            if row['tp'] and row['sl']:
+                profit += (row['tp'] - row['entry']) * row['position_size']
+                profit -= (row['entry'] - row['sl']) * row['position_size']
+        elif row['signal_type'] == 'sell':
+            if row['tp'] and row['sl']:
+                profit += (row['entry'] - row['tp']) * row['position_size']
+                profit -= (row['sl'] - row['entry']) * row['position_size']
+
+    report = (
+        f"📊 **Звіт по Угодах** 📊\n"
+        f"Загальна кількість угод: {total_trades}\n"
+        f"Успішні угоди (TP > Entry або SL < Entry): {successful_trades}\n"
+        f"Невдалі угоди (SL < Entry): {failed_trades}\n"
+        f"Загальний прибуток: ${profit:.2f}\n"
+    )
+    return report
 
 # ===============================
 # 14. WebSocket для кластерного аналізу (CVD)
 # ===============================
-async def binance_aggtrade_ws(symbol="btcusdt"):
-    """
-    Вебсокет для fstream.binance.com/ws/btcusdt@aggTrade,
-    Зберігаємо результати у global_aggtrades[symbol].
-    """
+async def binance_combined_ws(symbols):
     import websockets
-    url = f"wss://fstream.binance.com/ws/{symbol.lower()}@aggTrade"
-    async with websockets.connect(url) as ws:
-        print(f"🔗 WebSocket підключено: {symbol}")
-        async for msg in ws:
-            data = json.loads(msg)
-            price = float(data["p"])
-            qty = float(data["q"])
-            is_maker = data["m"]
-            ts = data["T"]
-            trade = {
-                "price": price,
-                "qty": qty,
-                "isBuyerMaker": is_maker,
-                "timestamp": ts
-            }
-            if symbol.upper() not in global_aggtrades:
-                global_aggtrades[symbol.upper()] = []
-            global_aggtrades[symbol.upper()].append(trade)
+    stream_names = [f"{sym.lower()}@aggTrade" for sym in symbols]
+    streams = "/".join(stream_names)
+    url = f"wss://fstream.binance.com/stream?streams={streams}"
 
-            # Видаляємо надто старі (понад 1 годину)
-            cutoff = time.time()*1000 - (60*60*1000)
-            global_aggtrades[symbol.upper()] = [
-                t for t in global_aggtrades[symbol.upper()]
-                if t["timestamp"] >= cutoff
-            ]
+    try:
+        async with websockets.connect(url) as ws:
+            logger.info(f"🔗 Combined WebSocket підключено для: {', '.join(symbols)}")
+            async for msg in ws:
+                data = json.loads(msg)
+                stream = data['stream']
+                payload = data['data']
+                symbol = payload['s']
+                trade = {
+                    "price": float(payload["p"]),
+                    "qty": float(payload["q"]),
+                    "isBuyerMaker": payload["m"],
+                    "timestamp": payload["T"]
+                }
+                if symbol not in global_aggtrades:
+                    global_aggtrades[symbol] = []
+                global_aggtrades[symbol].append(trade)
+
+                # Очищаємо трейди старіші за 1 годину
+                cutoff = time.time()*1000 - (60*60*1000)
+                global_aggtrades[symbol] = [
+                    t for t in global_aggtrades[symbol]
+                    if t["timestamp"] >= cutoff
+                ]
+    except Exception as e:
+        logger.error(f"❌ Помилка у Combined WebSocket: {e}")
+        await asyncio.sleep(5)
+        await binance_combined_ws(symbols)
 
 # ===============================
 # 15. Головна функція
 # ===============================
+def init_db():
+    logger.info("Database initialized.")
+    pass
+
 def main():
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("signal", signal))
+    app.add_handler(CommandHandler("report", report))
 
     if len(sys.argv) > 1 and sys.argv[1] == "check_signals":
-        print("🔄 Запускаємо check_signals через Scheduler")
+        logger.info("🔄 Запускаємо check_signals через Scheduler")
         asyncio.run(run_check_signals())
     else:
-        print("✅ Бот запущено! Використовуйте /start")
+        logger.info("✅ Бот запущено! Використовуйте /start")
 
-        # Якщо хочемо запустити кластерний потік (для BTC, ETH тощо):
         if websockets_installed:
             loop = asyncio.get_event_loop()
-            # Запускаємо для BTCUSDT:
-            loop.create_task(binance_aggtrade_ws("btcusdt"))
-            # Можна додати й інші символи, якщо потрібно
-            # loop.create_task(binance_aggtrade_ws("ethusdt"))
+            symbols_to_track = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "MATICUSDT"]
+            loop.create_task(binance_combined_ws(symbols_to_track))
 
         app.run_polling()
 
+
 async def run_check_signals():
-    """
-    Якщо викликається напряму з Heroku Scheduler чи іншого планувальника.
-    """
     try:
-        chat_id = "542817935"
+        chat_id = "542817935"  # ваш chat_id
         bot = Bot(token=TELEGRAM_TOKEN)
         await bot.send_message(chat_id=chat_id, text="Запуск перевірки сигналів...")
-        print("✅ Повідомлення успішно надіслано.")
-        # Тут можна викликати check_signals() "у ручному режимі", але
-        # для цього треба контекст job. Можна написати mock.
+        logger.info("✅ Повідомлення успішно надіслано.")
+
+        # Тепер викликаємо check_signals
+        class FakeContext:
+            def __init__(self, bot, chat_id):
+                self.bot = bot
+                self.job = self
+                self.chat_id = chat_id
+
+        # Створюємо об'єкт, який імітує context
+        fake_context = FakeContext(bot, chat_id)
+        await check_signals(fake_context)
+
     except Exception as e:
-        print(f"❌ Помилка у run_check_signals: {e}")
+        logger.error(f"❌ Помилка у run_check_signals: {e}")
 
 if __name__ == "__main__":
     main()

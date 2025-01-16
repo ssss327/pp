@@ -1601,3 +1601,698 @@ MACD(-0.01) > Signal(-0.01)
 RSI(49.43) < 50
 Ціна(2.09) близько нижньої Bollinger(2.06)
 (Патерн свічки підсилює сигнал: Hammer або Bullish Engulfing)
+2025-01-09 01:05:03.971595,ETHUSDT,1h,sell,None,None,None,===== Indicators =====
+No clear indicator signal, але Doji.
+
+===== Fundamental =====
+[CoinGecko] MarketCap=$402163514999, DevScore=0, CommScore=0, UpVotes=67.26%
+Дуже низька капа або активність розробників — ризик.
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для ETHUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: без BOS.
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:05:06.722244,BCHUSDT,1h,sell,None,None,None,===== Indicators =====
+No clear indicator signal, але hammer біля нижньої Bollinger.
+
+===== Fundamental =====
+[CoinGecko] MarketCap=$8625408732, DevScore=0, CommScore=0, UpVotes=58.33%
+Дуже низька капа або активність розробників — ризик.
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для BCHUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: без BOS.
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:05:18.252162,ONTUSDT,1h,buy,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти ONTUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для ONTUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=0.25).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:05:21.152491,BATUSDT,1h,buy,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти BATUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для BATUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=0.25).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:05:28.353452,KNCUSDT,1h,buy,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти KNCUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для KNCUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=0.60).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:05:34.195480,KAVAUSDT,1h,buy,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти KAVAUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для KAVAUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=0.51).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:05:45.909497,ICXUSDT,1h,buy,None,None,None,===== Indicators =====
+No clear indicator signal, але Doji.
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти ICXUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для ICXUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=0.19).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:05:48.112228,STORJUSDT,1h,buy,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти STORJUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для STORJUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=0.53).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:06:02.933721,ANKRUSDT,1h,sell,None,None,None,===== Indicators =====
+No clear indicator signal, але Doji.
+
+===== Fundamental =====
+[CoinGecko] MarketCap=$351948192, DevScore=0, CommScore=0, UpVotes=28.57%
+Дуже низька капа або активність розробників — ризик.
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для ANKRUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: без BOS.
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:06:05.648441,LITUSDT,1h,sell,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+[CoinGecko] MarketCap=$7684412258, DevScore=0, CommScore=0, UpVotes=68.97%
+Дуже низька капа або активність розробників — ризик.
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для LITUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: без BOS.
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:06:09.655940,SFPUSDT,1h,buy,None,None,None,===== Indicators =====
+No clear indicator signal, але Doji.
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти SFPUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для SFPUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=0.69).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:06:11.999694,COTIUSDT,1h,buy,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти COTIUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для COTIUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=0.12).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:06:19.706847,CELRUSDT,1h,buy,None,None,None,===== Indicators =====
+No clear indicator signal, але Doji.
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти CELRUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для CELRUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=0.02).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:06:26.593161,BTCDOMUSDT,1h,sell,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти BTCDOMUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для BTCDOMUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS down (пробили swing low=3075.10).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:06:28.785982,IOTXUSDT,1h,buy,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти IOTXUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для IOTXUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=0.04).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:06:31.963348,MASKUSDT,1h,buy,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти MASKUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для MASKUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=2.85).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:06:35.507415,1000XECUSDT,1h,buy,None,None,None,===== Indicators =====
+No clear indicator signal, але Doji.
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти 1000XECUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для 1000XECUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=0.04).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:06:38.510308,CELOUSDT,1h,buy,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти CELOUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для CELOUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=0.66).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:06:48.114317,GMTUSDT,1h,buy,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти GMTUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для GMTUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=0.14).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:07:00.708665,TUSDT,1h,buy,None,None,None,===== Indicators =====
+No clear indicator signal, але Doji.
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти TUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для TUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=0.03).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:07:03.399079,HIGHUSDT,1h,sell,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+[CoinGecko] MarketCap=$10693775, DevScore=0, CommScore=0, UpVotes=100.0%
+Дуже низька капа або активність розробників — ризик.
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для HIGHUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: без BOS.
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:07:06.344775,MINAUSDT,1h,sell,None,None,None,===== Indicators =====
+No clear indicator signal, але Doji.
+
+===== Fundamental =====
+[CoinGecko] MarketCap=$699037140, DevScore=0, CommScore=0, UpVotes=100.0%
+Дуже низька капа або активність розробників — ризик.
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для MINAUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: без BOS.
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:07:09.126184,ASTRUSDT,1h,buy,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: помилка CoinGecko => 429 Client Error: Too Many Requests for url: https://api.coingecko.com/api/v3/coins/astar?localization=false&tickers=false&market_data=true&community_data=true&developer_data=true&sparkline=false
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для ASTRUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=0.06).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:07:14.352616,ACHUSDT,1h,buy,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти ACHUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для ACHUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=0.02).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:07:19.955797,USDCUSDT,1h,buy,0.999723,1.0,1.0,===== Indicators =====
+Indicator-based: MACD bullish, RSI<50, close near lower Bollinger (1.00).
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти USDCUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для USDCUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: без BOS.
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:07:32.944142,NMRUSDT,1h,buy,None,None,None,===== Indicators =====
+No clear indicator signal, але Doji.
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти NMRUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для NMRUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=15.08).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:07:41.034071,OXTUSDT,1h,buy,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти OXTUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для OXTUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=0.12).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:07:43.923848,CYBERUSDT,1h,buy,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти CYBERUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для CYBERUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=3.17).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:07:50.463085,POLYXUSDT,1h,buy,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти POLYXUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для POLYXUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=0.28).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:08:02.788578,1000BONKUSDT,1h,sell,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+[CoinGecko] MarketCap=$0.0, DevScore=0, CommScore=0, UpVotes=None%
+Дуже низька капа або активність розробників — ризик.
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для 1000BONKUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: без BOS.
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:08:05.651803,PYTHUSDT,1h,sell,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+[CoinGecko] MarketCap=$1236717749, DevScore=0, CommScore=0, UpVotes=68.42%
+Дуже низька капа або активність розробників — ризик.
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для PYTHUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: без BOS.
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:08:18.827160,LSKUSDT,1h,buy,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти LSKUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для LSKUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=1.01).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:08:53.266350,RPLUSDT,1h,buy,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти RPLUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для RPLUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=10.84).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:09:02.515499,LOKAUSDT,1h,sell,None,None,None,===== Indicators =====
+No clear indicator signal, але Doji.
+
+===== Fundamental =====
+[CoinGecko] MarketCap=$23285390, DevScore=0, CommScore=0, UpVotes=None%
+Дуже низька капа або активність розробників — ризик.
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для LOKAUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: без BOS.
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:09:05.371536,HMSTRUSDT,1h,sell,None,None,None,===== Indicators =====
+No clear indicator signal, але Doji.
+
+===== Fundamental =====
+[CoinGecko] MarketCap=$181650210, DevScore=0, CommScore=0, UpVotes=80.0%
+Дуже низька капа або активність розробників — ризик.
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для HMSTRUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: без BOS.
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:09:18.364579,GRASSUSDT,1h,buy,None,None,None,===== Indicators =====
+
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти GRASSUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для GRASSUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=2.67).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:09:37.544400,DEGOUSDT,1h,buy,None,None,None,===== Indicators =====
+No clear indicator signal, але Doji.
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти DEGOUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для DEGOUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: BOS up (пробили swing high=2.80).
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
+2025-01-09 01:09:40.395895,MOCAUSDT,1h,buy,0.2403,0.26,0.23,===== Indicators =====
+Indicator-based: MACD bullish, RSI<50, close near lower Bollinger (0.24).
++ Свічковий патерн (hammer/bullish_engulfing).
+
+===== Fundamental =====
+Фундаментал: не вдалося знайти MOCAUSDT на CoinGecko (пошук).
+
+===== Cluster =====
+Кластер: Недостатньо trades у пам'яті для MOCAUSDT.
+
+===== Structural (Wyckoff + SM + ICM) =====
+=== Wyckoff ===
+Wyckoff: немає Spring чи UT.
+
+=== SMC ===
+SMC: без BOS.
+
+=== ICM ===
+ICM: не знайдено inside_bar + big_candle.
