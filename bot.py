@@ -12,7 +12,6 @@ import asyncio
 import json
 import logging
 import numpy as np
-
 from telegram import Bot, Update
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, ContextTypes,
