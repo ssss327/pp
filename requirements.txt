@@ -6,7 +6,7 @@ cycler==0.12.1
 fonttools==4.55.3
 h11==0.14.0
 httpcore==1.0.7
-httpx==0.28.1
+httpx==0.24.0
 idna==3.10
 kiwisolver==1.4.7
 matplotlib==3.10.0
